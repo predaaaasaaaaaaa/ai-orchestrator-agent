@@ -29,7 +29,7 @@ class SubTask(BaseModel):
     target_length: str = Field(description="Target word count for this section")
 
 
-class OrchestratrPlan(BaseModel):
+class OrchestratorPlan(BaseModel):
     """Orchestrator's blog structure and tasks"""
 
     topic_analysis: str = Field(description="Analysis of the blog topic")
@@ -118,6 +118,119 @@ Sections:
 Provide a cohesion score between 0.0 and 1.0, suggested edits for each section if needed, and a final polished version of the complete post.
 
 The cohesion score should reflect how well the sections flow together, with 1.0 being perfect cohesion.
-For suggested edits, focus on improving trasition and maintaining consistent tone across sections.
+For suggested edits, focus on improving transition and maintaining consistent tone across sections.
 The final version should incorporate your suggested improuvments into a polished, cohesive blog post.
 """
+
+
+# Step 3: Implement orchestrator
+
+
+class BologOrchestrator:
+    def __init__(self):
+        self.sections_content = {}
+
+    def get_plan(self, topic: str, target_length: int, style: str) -> OrchestratorPlan:
+        """Get orchestrator's blog structure plan"""
+        result = client.chat.completions.create(
+            model=model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "ORCHESTRATOR_PROMPT.format"(
+                        topic=topic, target_length=target_length, style=style
+                    ),
+                }
+            ],
+            response_model=OrchestratorPlan,
+        )
+        return result
+
+    def write_section(self, topic: str, section: SubTask) -> SectionContent:
+        """Worker: Write a specific blog section with context from previous sections.
+
+        Args:
+            topic: The main blog topic
+            section: SubTask containing section details
+
+        Returns:
+            SectionContent: The written content and key points
+        """
+        # Create content from previously written sections
+        previous_sections = "\n\n".join(
+            [
+                f"=== {section_type} ===\n{content.content}"
+                for section_type, content in self.sections_content.items()
+            ]
+        )
+
+        result = client.chat.completions.create(
+            model=model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": WORKER_PROMPT.format(
+                        topic=topic,
+                        section_type=section.section_type,
+                        description=section.description,
+                        style_guide=section.style_guide,
+                        target_length=section.target_length,
+                        previous_sections=previous_sections
+                        if previous_sections
+                        else "This is the first section.",
+                    ),
+                }
+            ],
+            response_model=SectionContent,
+        )
+        return result
+
+    def review_post(self, topic: str, plan: OrchestratorPlan) -> ReviewFeedback:
+        """Reviewer: Analyze and improve overall cohesion"""
+        sections_text = "\n\n".join(
+            [
+                f"=== {section_type} ===\n{content.content}"
+                for section_type, content in self.sections_content.items()
+            ]
+        )
+
+        result = client.chat.completions.create(
+            model=model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": REVIEWER_PROMPT.format(
+                        topic=topic,
+                        audience=plan.target_audience,
+                        sections=sections_text,
+                    ),
+                }
+            ],
+            response_model=ReviewFeedback,
+        )
+        return result
+
+    def write_blog(
+        self, topic: str, target_length: int = 1000, style: str = "informative"
+    ) -> Dict:
+        """Process the entire blog writing task"""
+        logger.info(f"Starting blog writing process for: {topic}")
+
+        # Get blog structure plan
+        plan = self.get_plan(topic, target_length, style)
+        logger.info(f"Blog structure planned: {len(plan.sections)} sections")
+        logger.info(f"Blog structure planned: {plan.model_dump_json(indent=2)}")
+
+        # Write each section
+        for section in plan.sections:
+            logger.info(f"Writing section: {section.section_type}")
+            content = self.write_section(topic, section)
+            self.sections_content[section.section_type] = content
+
+        # Review and polish
+        logger.info("Reviewing full blog post")
+        review = self.review_post(topic, plan)
+
+        return {"structure": plan, "sections": self.sections_content, "review": review}
+
+
