@@ -103,11 +103,11 @@ Return your response in this format:
 # Key Points
 - Main point 1
 - Main point 2
-[Additional points as nneeded...]
+[Additional points as needed...]
 """
 
 REVIEWER_PROMPT = """
-Review this blog post for cohesion qnd flow:
+Review this blog post for cohesion and flow:
 
 Topic: {topic}
 Target Audience: {audience}
