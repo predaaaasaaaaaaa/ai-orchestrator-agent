@@ -4,6 +4,10 @@ import logging
 # Suppress all logging errors from other libraries
 logging.raiseExceptions = False  # This stops logging errors from being printed
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from typing import List, Dict
 from pydantic import BaseModel, Field
 from groq import Groq
