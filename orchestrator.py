@@ -1,3 +1,9 @@
+import warnings
+import logging
+
+# Suppress all logging errors from other libraries
+logging.raiseExceptions = False  # This stops logging errors from being printed
+
 from typing import List, Dict
 from pydantic import BaseModel, Field
 from groq import Groq
