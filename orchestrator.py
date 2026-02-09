@@ -241,7 +241,9 @@ if __name__ == "__main__":
 
     # Example: Technical blog post
     topic = "The impact of AI on software development"
-    result = orchestrator.write_blog(topic=topic, target_length=1200, style="technical but accessible")
+    result = orchestrator.write_blog(
+        topic=topic, target_length=1200, style="technical but accessible"
+    )
 
     print("\nFinal Blog Post:")
     print(result["review"].final_version)
@@ -251,5 +253,3 @@ if __name__ == "__main__":
         for edit in result["review"].suggested_edits:
             print(f"Section: {edit.section_name}")
             print(f"Suggested Edit: {edit.suggested_edit}")
-
-            
