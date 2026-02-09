@@ -12,6 +12,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("httpcore").setLevel(logging.WARNING)
+
 
 client = instructor.from_groq(Groq(api_key=os.getenv("GROQ_API_KEY")))
 model = "llama-3.3-70b-versatile"
