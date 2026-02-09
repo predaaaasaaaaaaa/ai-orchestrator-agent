@@ -253,11 +253,26 @@ if __name__ == "__main__":
         topic=topic, target_length=1200, style="technical but accessible"
     )
 
-    print("\nFinal Blog Post:")
-    print(result["review"].final_version)
+    print("\n" + "=" * 80)
+    print("FINAL BLOG POST")
+    print("=" * 80 + "\n")
 
-    print("\nCohesion Score:", result["review"].cohesion_score)
+    # Split the final version into paragraphs and print with spacing
+    paragraphs = result["review"].final_version.split(". ")
+    for i, paragraph in enumerate(paragraphs):
+        if paragraph.strip():
+            print(paragraph.strip() + ".")
+            if (i + 1) % 3 == 0:  # Add extra line break every 3 sentences
+                print()
+
+    print("\n" + "=" * 80)
+    print(f"COHESION SCORE: {result['review'].cohesion_score}")
+    print("=" * 80 + "\n")
+
     if result["review"].suggested_edits:
+        print("SUGGESTED EDITS:")
+        print("-" * 80)
         for edit in result["review"].suggested_edits:
-            print(f"Section: {edit.section_name}")
-            print(f"Suggested Edit: {edit.suggested_edit}")
+            print(f"\n📝 Section: {edit.section_name}")
+            print(f"   Suggestion: {edit.suggested_edit}")
+        print("\n" + "=" * 80)
