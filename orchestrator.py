@@ -8,7 +8,7 @@ import instructor
 # Set up logging cnfiguration
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s - %(l;evelname)s - %^(message)s",
+    format="%(asctime)s - %(levelname)s - %^(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -164,7 +164,7 @@ class BologOrchestrator:
             ]
         )
 
-        result = client.chat.completions.create(
+        result_2 = client.chat.completions.create(
             model=model,
             messages=[
                 {
@@ -183,7 +183,7 @@ class BologOrchestrator:
             ],
             response_model=SectionContent,
         )
-        return result
+        return result_2
 
     def review_post(self, topic: str, plan: OrchestratorPlan) -> ReviewFeedback:
         """Reviewer: Analyze and improve overall cohesion"""
@@ -194,7 +194,7 @@ class BologOrchestrator:
             ]
         )
 
-        result = client.chat.completions.create(
+        result_3 = client.chat.completions.create(
             model=model,
             messages=[
                 {
@@ -208,11 +208,9 @@ class BologOrchestrator:
             ],
             response_model=ReviewFeedback,
         )
-        return result
+        return result_3
 
-    def write_blog(
-        self, topic: str, target_length: int = 1000, style: str = "informative"
-    ) -> Dict:
+    def write_blog(self, topic: str, target_length: int = 1000, style: str = "informative") -> Dict:
         """Process the entire blog writing task"""
         logger.info(f"Starting blog writing process for: {topic}")
 
