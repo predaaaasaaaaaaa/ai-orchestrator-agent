@@ -8,7 +8,7 @@ import instructor
 # Set up logging cnfiguration
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %^(message)s",
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ class SectionContent(BaseModel):
 class SuggestedEdits(BaseModel):
     """ "Suggested Edits for a section"""
 
-    section_name: str = Field(description="Name of the secton")
+    section_name: str = Field(description="Name of the section")
     suggested_edit: str = Field(description="Suggested edit")
 
 
@@ -58,7 +58,7 @@ class ReviewFeedback(BaseModel):
     suggested_edits: List[SuggestedEdits] = Field(
         description="Suggested edits by section"
     )
-    final_verion: str = Field(description="Complete, polished blogh post")
+    final_version: str = Field(description="Complete, polished blog post")
 
 
 # Step 2: Define Prompts
@@ -70,7 +70,7 @@ Topic: {topic}
 Target Length: {target_length} words
 Style: {style}
 
-Return youe response in this format:
+Return your response in this format:
 
 # Analysis
 Analyze the topic and explain how it should be structured.
@@ -94,6 +94,10 @@ Topic: {topic}
 Section Type: {section_type}
 Section Goal: {description}
 Style Guide: {style_guide}
+Target Length: {target_length}
+
+Previously Written Sections:
+{previous_sections}
 
 Return your response in this format:
 
@@ -119,14 +123,14 @@ Provide a cohesion score between 0.0 and 1.0, suggested edits for each section i
 
 The cohesion score should reflect how well the sections flow together, with 1.0 being perfect cohesion.
 For suggested edits, focus on improving transition and maintaining consistent tone across sections.
-The final version should incorporate your suggested improuvments into a polished, cohesive blog post.
+The final version should incorporate your suggested impruvments into a polished, cohesive blog post.
 """
 
 
 # Step 3: Implement orchestrator
 
 
-class BologOrchestrator:
+class BlogOrchestrator:
     def __init__(self):
         self.sections_content = {}
 
@@ -137,7 +141,7 @@ class BologOrchestrator:
             messages=[
                 {
                     "role": "system",
-                    "content": "ORCHESTRATOR_PROMPT.format"(
+                    "content": ORCHESTRATOR_PROMPT.format(
                         topic=topic, target_length=target_length, style=style
                     ),
                 }
@@ -210,7 +214,9 @@ class BologOrchestrator:
         )
         return result_3
 
-    def write_blog(self, topic: str, target_length: int = 1000, style: str = "informative") -> Dict:
+    def write_blog(
+        self, topic: str, target_length: int = 1000, style: str = "informative"
+    ) -> Dict:
         """Process the entire blog writing task"""
         logger.info(f"Starting blog writing process for: {topic}")
 
@@ -235,7 +241,7 @@ class BologOrchestrator:
 # Step 4: Example usage
 
 if __name__ == "__main__":
-    orchestrator = BologOrchestrator()
+    orchestrator = BlogOrchestrator()
 
     # Example: Technical blog post
     topic = "The impact of AI on software development"
