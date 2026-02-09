@@ -283,7 +283,7 @@ st.divider()
 st.markdown(
     """
 <div style='text-align: center; color: #888; padding: 2rem;'>
-    Made with ❤️ using Streamlit and Groq API<br>
+    Made by Samy Metref - AI Engineer<br>
     <small>Powered by Llama 3.3 70B Versatile</small>
 </div>
 """,
